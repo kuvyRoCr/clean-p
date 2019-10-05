@@ -105,3 +105,8 @@ venv.bak/
 
 
 input/
+code/dask-worker-space/global.lock
+code/dask-worker-space/purge.lock
+code/dask-worker-space/worker-tzakofwo.dirlock
+code/dask-worker-space/worker-vh45al_i.dirlock
+.vscode/
