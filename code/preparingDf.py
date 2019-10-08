@@ -71,8 +71,40 @@ def cleanCondition(condition):
         return 'unknown'
     return condition
 
+def cleanOdometer(odo):
+    '''Categoriza la columna odometro en rangos de millas'''
+    if odo == 0.01:
+        return 'unknown'
+    elif odo == 0.0:
+        return '0'
+    elif 0<odo<10000:
+        return '<10000'
+    elif 10000<odo<30000:
+        return '10000<30000'
+    elif 30000<odo<60000:
+        return '30000<60000'
+    elif 60000<odo<90000:
+        return '60000<90000'
+    elif 90000<odo<120000:
+        return '90000<120000'
+    elif 120000<odo<150000:
+        return '120000<150000'
+    elif 150000<odo<180000:
+        return '150000<180000'
+    elif 180000<odo<210000:
+        return '180000<210000'
+    elif odo>210000:
+        return '>210000'
+    
+def cleanWeather(weather):
+    '''Categoriza weather redondeando'''
+    try:
+        return str(int(round(weather,1)))
+    except:
+        return 'unknown'
+
 def cleanAllDf():
-    #client=getDaskClient()
+    client=getDaskClient()
     cars=getCars()
     cars.state_name=cars.state_name.apply(cleanNameStateName)
     cars= dropLocationColumns(cars)
@@ -89,6 +121,32 @@ def cleanAllDf():
     cars=cars.drop(columns='make')#arriesgado, pero está muy sucia
     cars.condition=cars.condition.fillna('unknown')
     cars.condition= cars.condition.apply(cleanCondition)
+    cars=cars.drop(columns=['Id']).compute()
+    cars.cylinders=cars.cylinders.fillna('other')
+
+    cars.odometer=cars.odometer.fillna(0.01)
+
+
+    cars.fuel=cars.fuel.fillna('other')
+
+    cars.odometer= cars.odometer.apply(cleanOdometer)
+    cars.odometer=cars.odometer.fillna('unknown')
+
+    cars.title_status=cars.title_status.fillna('missing')
+    cars.transmission=cars.transmission.fillna('other')
+
+    cars.drive=cars.drive.fillna('unknown')
+
+    cars.type=cars.type.fillna('unknown')
+
+    cars=cars.drop(columns='size')
+
+    cars=cars.drop(columns='paint_color')
+
+    cars.weather=cars.weather.apply(cleanWeather)
+
+    cars.to_csv('../output/cleanDF.csv')
+
     return cars
 
 
